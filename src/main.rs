@@ -25,18 +25,26 @@ fn App() -> Element {
 
 #[component]
 fn AppContent() -> Element {
+    let selected_piece = use_signal(|| None::<usize>);
     let pieces_resource = use_resource(|| async {
         wordpress::fetch_pieces().await
     });
-    let selected_piece = use_signal(|| None::<usize>);
-    let pieces = pieces_resource.read();
 
+    let pieces = pieces_resource.read();
     let Some(pieces) = pieces.as_ref() else {
+        // Loading pieces
         return rsx! {
             p { "Várj egy picit..." }
         };
     };
+    let Ok(pieces) = pieces else {
+        // Failed to load pieces
+        return rsx! {
+            p { "Nem sikerült betölteni az írásokat." }
+        };
+    };
 
+    // Successfully loaded pieces
     let poems = pieces_for_category(pieces, Category::Poem);
     let novellas = pieces_for_category(pieces, Category::Novella);
     let fairy_tales = pieces_for_category(pieces, Category::FairyTale);
@@ -53,9 +61,7 @@ fn AppContent() -> Element {
         p { "Kattints a címre, amit meg szeretnél osztani." }
         div { id: "columns",
             CategoryColumn { title: "Versek", pieces: poems, selected_piece }
-
             CategoryColumn { title: "Novellák", pieces: novellas, selected_piece }
-
             CategoryColumn { title: "Mesék", pieces: fairy_tales, selected_piece }
         }
 
