@@ -1,16 +1,16 @@
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Category {
-    Vers,
+    Poem,
     Novella,
-    Mese,
+    FairyTale,
 }
 
 impl Category {
     pub fn display_name(&self) -> &'static str {
         match self {
-            Category::Vers => "vers",
+            Category::Poem => "vers",
             Category::Novella => "novella",
-            Category::Mese => "mese",
+            Category::FairyTale => "mese",
         }
     }
 }

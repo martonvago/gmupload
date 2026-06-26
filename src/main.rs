@@ -20,49 +20,35 @@ fn App() -> Element {
     let pieces = wordpress::demo_pieces();
     let selected_piece = use_signal(|| None::<usize>);
 
-    let selected = selected_piece();
+    let poems = pieces_for_category(&pieces, Category::Poem);
+    let novellas = pieces_for_category(&pieces, Category::Novella);
+    let fairy_tales = pieces_for_category(&pieces, Category::FairyTale);
 
+    let selected = selected_piece();
     let text = if let Some(index) = selected {
         build_post(&pieces[index])
     } else {
         String::new()
     };
 
-    let poems = pieces
-        .iter()
-        .cloned()
-        .enumerate()
-        .filter(|(_, piece)| piece.category == Category::Vers)
-        .collect::<Vec<_>>();
-
-    let novellas = pieces
-        .iter()
-        .cloned()
-        .enumerate()
-        .filter(|(_, piece)| piece.category == Category::Novella)
-        .collect::<Vec<_>>();
-
-    let fairy_tales = pieces
-        .iter()
-        .cloned()
-        .enumerate()
-        .filter(|(_, piece)| piece.category == Category::Mese)
-        .collect::<Vec<_>>();
-
     rsx! {
         document::Stylesheet { href: MAIN_CSS }
 
         main { id: "app",
-            h1 { "Facebook Post Helper" }
-            p { "Choose a piece to prepare a Facebook post." }
+            h1 { "Írás megosztása" }
+            p { "Kattints a címre, amit meg szeretnél osztani." }
 
             div { id: "columns",
-                CategoryColumn { title: "Poems", pieces: poems, selected_piece }
-
-                CategoryColumn { title: "Novellas", pieces: novellas, selected_piece }
+                CategoryColumn { title: "Versek", pieces: poems, selected_piece }
 
                 CategoryColumn {
-                    title: "Fairy Tales",
+                    title: "Novellák",
+                    pieces: novellas,
+                    selected_piece,
+                }
+
+                CategoryColumn {
+                    title: "Mesék",
                     pieces: fairy_tales,
                     selected_piece,
                 }
@@ -76,4 +62,16 @@ fn App() -> Element {
             PostButton { disabled: selected.is_none(), text }
         }
     }
+}
+
+fn pieces_for_category(
+    pieces: &[models::Piece],
+    category: Category,
+) -> Vec<(usize, models::Piece)> {
+    pieces
+        .iter()
+        .cloned()
+        .enumerate()
+        .filter(|(_, piece)| piece.category == category)
+        .collect()
 }

@@ -6,13 +6,13 @@ pub fn demo_pieces() -> Vec<Piece> {
             title: "Spring Morning".to_string(),
             link: "https://example.com/spring-morning".to_string(),
             content: "This is the poem text for Spring Morning.".to_string(),
-            category: Category::Vers,
+            category: Category::Poem,
         },
         Piece {
             title: "The Little Fox".to_string(),
             link: "https://example.com/the-little-fox".to_string(),
             content: "Once upon a time, there was a little fox...".to_string(),
-            category: Category::Mese,
+            category: Category::FairyTale,
         },
         Piece {
             title: "A Short Memory".to_string(),
