@@ -1,38 +1,79 @@
 use dioxus::prelude::*;
 
-const FAVICON: Asset = asset!("/assets/favicon.ico");
+mod models;
+mod wordpress;
+mod post_template;
+mod components;
+
 const MAIN_CSS: Asset = asset!("/assets/main.css");
-const HEADER_SVG: Asset = asset!("/assets/header.svg");
-const TAILWIND_CSS: Asset = asset!("/assets/tailwind.css");
 
 fn main() {
     dioxus::launch(App);
 }
 
+use crate::components::{CategoryColumn, PostButton};
+use crate::models::Category;
+use crate::post_template::build_post;
+
 #[component]
 fn App() -> Element {
-    rsx! {
-        document::Link { rel: "icon", href: FAVICON }
-        document::Link { rel: "stylesheet", href: MAIN_CSS } document::Link { rel: "stylesheet", href: TAILWIND_CSS }
-        Hero {}
+    let pieces = wordpress::demo_pieces();
+    let selected_piece = use_signal(|| None::<usize>);
 
-    }
-}
+    let selected = selected_piece();
 
-#[component]
-pub fn Hero() -> Element {
+    let text = if let Some(index) = selected {
+        build_post(&pieces[index])
+    } else {
+        String::new()
+    };
+
+    let poems = pieces
+        .iter()
+        .cloned()
+        .enumerate()
+        .filter(|(_, piece)| piece.category == Category::Vers)
+        .collect::<Vec<_>>();
+
+    let novellas = pieces
+        .iter()
+        .cloned()
+        .enumerate()
+        .filter(|(_, piece)| piece.category == Category::Novella)
+        .collect::<Vec<_>>();
+
+    let fairy_tales = pieces
+        .iter()
+        .cloned()
+        .enumerate()
+        .filter(|(_, piece)| piece.category == Category::Mese)
+        .collect::<Vec<_>>();
+
     rsx! {
-        div {
-            id: "hero",
-            img { src: HEADER_SVG, id: "header" }
-            div { id: "links",
-                a { href: "https://dioxuslabs.com/learn/0.7/", "📚 Learn Dioxus" }
-                a { href: "https://dioxuslabs.com/awesome", "🚀 Awesome Dioxus" }
-                a { href: "https://github.com/dioxus-community/", "📡 Community Libraries" }
-                a { href: "https://github.com/DioxusLabs/sdk", "⚙️ Dioxus Development Kit" }
-                a { href: "https://marketplace.visualstudio.com/items?itemName=DioxusLabs.dioxus", "💫 VSCode Extension" }
-                a { href: "https://discord.gg/XgGxMSkvUM", "👋 Community Discord" }
+        document::Stylesheet { href: MAIN_CSS }
+
+        main { id: "app",
+            h1 { "Facebook Post Helper" }
+            p { "Choose a piece to prepare a Facebook post." }
+
+            div { id: "columns",
+                CategoryColumn { title: "Poems", pieces: poems, selected_piece }
+
+                CategoryColumn { title: "Novellas", pieces: novellas, selected_piece }
+
+                CategoryColumn {
+                    title: "Fairy Tales",
+                    pieces: fairy_tales,
+                    selected_piece,
+                }
             }
+            if let Some(index) = selected_piece() {
+                p { "Selected: {pieces[index].title}" }
+
+                pre { "{build_post(&pieces[index])}" }
+            }
+
+            PostButton { disabled: selected.is_none(), text }
         }
     }
 }
