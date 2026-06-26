@@ -5,6 +5,7 @@ use crate::models::{Category, Piece};
 use crate::post_template::build_post;
 
 mod components;
+mod facebook;
 mod models;
 mod post_template;
 mod wordpress;

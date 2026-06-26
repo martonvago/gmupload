@@ -7,11 +7,15 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+chromiumoxide = "0.9.1"
 dioxus = { version = "0.7.1", features = [] }
-dioxus-clipboard = "0.3.0"
+dirs = "6.0.0"
+futures = "0.3.32"
 open = "5.3.5"
 reqwest = { version = "0.13.4", features = ["json"] }
 serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.150"
+tokio = "1.52.3"
 
 [features]
 default = ["desktop"]
