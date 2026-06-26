@@ -1,6 +1,6 @@
 use crate::models::{Category, Piece};
 
-pub fn demo_pieces() -> Vec<Piece> {
+pub async fn fetch_pieces() -> Vec<Piece> {
     vec![
         Piece {
             title: "Spring Morning".to_string(),
