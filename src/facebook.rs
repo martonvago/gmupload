@@ -21,7 +21,7 @@ pub async fn compose_post(
     )
     .await?;
 
-    tokio::spawn(async move {
+    let browser_task = tokio::spawn(async move {
         while handler.next().await.is_some() {}
     });
 
@@ -41,8 +41,8 @@ pub async fn compose_post(
     editor.click().await?;
     page.execute(InsertTextParams::new(text.to_string())).await?;
 
-    // TODO: Wait until closed manually
-    tokio::time::sleep(std::time::Duration::from_secs(60)).await;
+    // Wait until browser closed manually
+    browser_task.await?;
     Ok(())
 }
 
