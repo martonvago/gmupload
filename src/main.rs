@@ -28,6 +28,7 @@ fn AppContent() -> Element {
     let pieces_resource = use_resource(|| async {
         wordpress::fetch_pieces().await
     });
+    let selected_piece = use_signal(|| None::<usize>);
     let pieces = pieces_resource.read();
 
     let Some(pieces) = pieces.as_ref() else {
@@ -40,7 +41,6 @@ fn AppContent() -> Element {
     let novellas = pieces_for_category(pieces, Category::Novella);
     let fairy_tales = pieces_for_category(pieces, Category::FairyTale);
 
-    let selected_piece = use_signal(|| None::<usize>);
     let selected = selected_piece();
     let post_text = if let Some(index) = selected {
         build_post(&pieces[index])
@@ -66,7 +66,7 @@ fn AppContent() -> Element {
 
         PostButton { disabled: selected.is_none(), text: post_text }
     }
-    }
+}
 
 
 fn pieces_for_category(
