@@ -28,10 +28,15 @@ pub async fn compose_post(
     let page = browser.new_page("https://www.facebook.com").await?;
     page.wait_for_navigation().await?;
 
-    let create_post = wait_for_element(
+    let Ok(create_post) = wait_for_element(
         &page,
         r#"div[aria-label="Create a post"]"#,
-    ).await?;
+    ).await else {
+        eprintln!("Could not find 'Create a post'. Grandma may need to log in.");
+        // Wait until browser closed manually
+        browser_task.await?;
+        return Ok(());
+    };
     create_post.click().await?;
 
     let editor = wait_for_element(
