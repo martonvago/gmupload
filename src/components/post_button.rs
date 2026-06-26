@@ -9,13 +9,28 @@ pub fn PostButton(disabled: bool, text: String) -> Element {
     rsx! {
         button {
             disabled,
+
             onclick: move |_| {
-                match clipboard.set(text.clone()) {
-                    Ok(_) => status.set("Vágólapra másolva.".to_string()),
-                    Err(_) => status.set("Nem sikerült másolni.".to_string()),
+                if let Err(_) = clipboard.set(text.clone()) {
+                    status.set("Nem sikerült a szöveget a vágólapra másolni.".to_string());
+                    return;
                 }
+
+                if let Err(_) = open::that("https://www.facebook.com") {
+                    status
+                        .set(
+                            "Nem sikerült megnyitni a Facebookot.".to_string(),
+                        );
+                    return;
+                }
+                status
+                    .set(
+                        "A Facebook megnyílt. Nyomj Ctrl+V-t a szöveg beillesztéséhez."
+                            .to_string(),
+                    );
             },
-            "Szöveg másolása"
+
+            "Megosztás Facebookon"
         }
 
         if !status().is_empty() {
